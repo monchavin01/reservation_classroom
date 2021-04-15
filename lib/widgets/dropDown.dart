@@ -54,3 +54,80 @@ class DropDown {
     );
   }
 }
+
+class ListData {
+  static List<String> buildingList = [
+    'building 15',
+    'building 28',
+    'building it',
+    'building physical education',
+    'building welfare',
+    'gym',
+  ];
+
+  static List<String> floorBuilding15 = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14"
+  ];
+
+  static List<String> floorBuilding28 = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+  ];
+
+  static List<String> floorBuildingIT = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+  ];
+
+  static List<String> floorBuildingPhysicalEducation = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+  ];
+
+  static List<String> floorBuildingWelfare = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+  ];
+
+  static List<String> gym = [
+    "1",
+  ];
+}

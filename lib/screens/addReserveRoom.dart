@@ -1,4 +1,5 @@
 import 'package:admin_cru_recognition/widgets/dropDown.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,17 +9,10 @@ class AddReserveRoomScreen extends StatefulWidget {
 }
 
 class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
-  var _chosenValue;
-  List<String> buildingList = [
-    'onGrass',
-    'running',
-    'court',
-  ];
-  List<String> floorList = [
-    '1',
-    '2',
-    '3',
-  ];
+  final firestoreInstance = FirebaseFirestore.instance;
+  var _chosenValueCollection;
+  var _chosenValueDoc;
+
   TextEditingController dateController = TextEditingController();
   TextEditingController roomNumberController = TextEditingController();
   TextEditingController subjectController = TextEditingController();
@@ -49,22 +43,22 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
               children: [
                 DropDown().buildDropDown(
                     "building name",
-                    buildingList,
+                    ListData.buildingList,
                     MediaQuery.of(context).size.width * 0.6,
                     MediaQuery.of(context).size.height * 0.06,
-                    _chosenValue, (String value) {
+                    _chosenValueCollection, (String value) {
                   setState(() {
-                    _chosenValue = value;
+                    _chosenValueCollection = value;
                   });
                 }),
                 DropDown().buildDropDown(
                     "floor",
-                    buildingList,
+                    checkCondition(),
                     MediaQuery.of(context).size.width * 0.25,
                     MediaQuery.of(context).size.height * 0.06,
-                    _chosenValue, (String value) {
+                    _chosenValueDoc, (String value) {
                   setState(() {
-                    _chosenValue = value;
+                    _chosenValueDoc = value;
                   });
                 }),
               ],
@@ -101,12 +95,33 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
           child: RaisedButton(
             textColor: Colors.white,
             color: Colors.blue,
-            onPressed: () {},
+            onPressed: () {
+              _onPressed(context);
+            },
             child: Text('Add'),
           ),
         ),
       ),
     );
+  }
+
+  List<String> checkCondition() {
+    if (_chosenValueCollection != "building 15") {
+      if (_chosenValueCollection != "building 28") {
+        if (_chosenValueCollection != "building it") {
+          if (_chosenValueCollection != "building physical education") {
+            if (_chosenValueCollection != "building welfare") {
+              return ListData.gym;
+            }
+            return ListData.floorBuildingWelfare;
+          }
+          return ListData.floorBuildingPhysicalEducation;
+        }
+        return ListData.floorBuildingIT;
+      }
+      return ListData.floorBuilding28;
+    }
+    return ListData.floorBuilding15;
   }
 
   Widget _buildTimeFormField(TextEditingController controller) {
@@ -221,5 +236,21 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
         String resultFormatTime = picked_s.format(context);
         timeFromController.text = resultFormatTime;
       });
+  }
+
+  void _onPressed(BuildContext context) {
+    firestoreInstance
+        .collection("test")
+        .doc("15-building")
+        .collection("2")
+        .add({
+      "date": "23/02/2564",
+      "roomNumber": "9004",
+      "subject": "math",
+      "timeFromSchedule": "01.02 AM",
+      "timeToSchedule": "04.05 AM",
+    }).then((value) {
+      // _showMyDialog(context);
+    });
   }
 }
