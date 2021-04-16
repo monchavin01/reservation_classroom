@@ -12,6 +12,7 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
   final firestoreInstance = FirebaseFirestore.instance;
   var _chosenValueCollection;
   var _chosenValueDoc;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController dateController = TextEditingController();
   TextEditingController roomNumberController = TextEditingController();
@@ -35,6 +36,7 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(),
       body: Column(
         children: [
@@ -64,16 +66,10 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
               ],
             ),
           ),
+          _buildTextFormField('Room Number', 'Enter Room Number',
+              roomNumberController, validate),
           _buildTextFormField(
-            'Room Number',
-            'Enter Room Number',
-            roomNumberController,
-          ),
-          _buildTextFormField(
-            'Subject',
-            'Enter Subject',
-            subjectController,
-          ),
+              'Subject', 'Enter Subject', subjectController, validate),
           _buildDateFormField(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +81,7 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
               ),
               _buildTimeFormField(timeToController),
             ],
-          )
+          ),
         ],
       ),
       bottomNavigationBar: Padding(
@@ -103,6 +99,14 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
         ),
       ),
     );
+  }
+
+  String validate(String value) {
+    print("value");
+    if (value == null || value.isEmpty) {
+      return 'Please enter some text';
+    }
+    return null;
   }
 
   List<String> checkCondition() {
@@ -183,17 +187,12 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
     );
   }
 
-  Widget _buildTextFormField(
-      String lebelText, String hintText, TextEditingController controller) {
+  Widget _buildTextFormField(String lebelText, String hintText,
+      TextEditingController controller, validate) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextFormField(
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter some text';
-          }
-          return null;
-        },
+        validator: validate,
         controller: controller,
         decoration: InputDecoration(
           labelText: lebelText,
@@ -220,7 +219,7 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
   }
 
   Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay picked_s = await showTimePicker(
+    final TimeOfDay picked = await showTimePicker(
         context: context,
         initialTime: selectedTime,
         builder: (BuildContext context, Widget child) {
@@ -230,27 +229,44 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
           );
         });
 
-    if (picked_s != null && picked_s != selectedTime)
+    if (picked != null && picked != selectedTime)
       setState(() {
-        selectedTime = picked_s;
-        String resultFormatTime = picked_s.format(context);
+        selectedTime = picked;
+        String resultFormatTime = picked.format(context);
         timeFromController.text = resultFormatTime;
       });
   }
 
   void _onPressed(BuildContext context) {
-    firestoreInstance
-        .collection("test")
-        .doc("15-building")
-        .collection("2")
-        .add({
-      "date": "23/02/2564",
-      "roomNumber": "9004",
-      "subject": "math",
-      "timeFromSchedule": "01.02 AM",
-      "timeToSchedule": "04.05 AM",
-    }).then((value) {
-      // _showMyDialog(context);
-    });
+    if (_chosenValueCollection == null ||
+        _chosenValueCollection.isEmpty ||
+        _chosenValueDoc == null ||
+        _chosenValueDoc.isEmpty ||
+        roomNumberController.text.isEmpty ||
+        roomNumberController.text == null ||
+        subjectController.text.isEmpty ||
+        subjectController.text == null) {
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text('validate value should not empty.'),
+        backgroundColor: Colors.red,
+      ));
+    } else {
+      firestoreInstance
+          .collection("reservation-classroom")
+          .doc(_chosenValueCollection)
+          .collection(_chosenValueDoc)
+          .add({
+        "date": dateController.text,
+        "roomNumber": roomNumberController.text,
+        "subject": subjectController.text,
+        "timeFromSchedule": timeFromController.text,
+        "timeToSchedule": timeToController.text,
+      }).then((value) {
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('success.'),
+          backgroundColor: Colors.green,
+        ));
+      });
+    }
   }
 }
