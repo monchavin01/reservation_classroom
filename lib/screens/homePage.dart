@@ -132,13 +132,14 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailReserve(),
+              builder: (context) => DetailReserve(data: data),
             ),
           );
         },
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.1,
-          width: MediaQuery.of(context).size.width * 0.95,
+          // height: MediaQuery.of(context).size.height * 0.1,
+          // width: MediaQuery.of(context).size.width * 0.95,
+          padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
             color: Colors.white,
             boxShadow: [
@@ -147,28 +148,34 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
             borderRadius: BorderRadius.circular(16),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+          child: Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
                   children: [
-                    Text('room number'),
+                    Text('Room number:'),
                     SizedBox(width: 16),
                     Text(data.data()['roomNumber'])
                   ],
                 ),
                 Row(
                   children: [
-                    Text('subject'),
+                    Text('Subject:'),
                     SizedBox(width: 16),
                     Text(data.data()['subject'])
                   ],
                 ),
                 Row(
                   children: [
-                    Text('time'),
+                    Text('Date:'),
+                    SizedBox(width: 16),
+                    Text(data.data()['date'])
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text('time:'),
                     SizedBox(width: 16),
                     Text(data.data()['timeFromSchedule']),
                     SizedBox(width: 16),

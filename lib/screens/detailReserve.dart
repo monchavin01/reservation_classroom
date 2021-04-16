@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DetailReserve extends StatefulWidget {
+  final data;
+  DetailReserve({Key key, @required this.data}) : super(key: key);
   @override
   _DetailReserveState createState() => _DetailReserveState();
 }
@@ -33,7 +35,7 @@ class _DetailReserveState extends State<DetailReserve> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('2222'),
+                    child: Text(widget.data.data()['roomNumber']),
                   ),
                 ],
               ),
@@ -42,7 +44,7 @@ class _DetailReserveState extends State<DetailReserve> {
                   Text('Subject:'),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('math'),
+                    child: Text(widget.data.data()['subject']),
                   ),
                 ],
               ),
@@ -51,7 +53,7 @@ class _DetailReserveState extends State<DetailReserve> {
                   Text('Date:'),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('01/02/2540'),
+                    child: Text(widget.data.data()['date']),
                   ),
                 ],
               ),
@@ -60,7 +62,7 @@ class _DetailReserveState extends State<DetailReserve> {
                   Text('Time:'),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('01.00 AM'),
+                    child: Text(widget.data.data()['timeFromSchedule']),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
@@ -68,7 +70,7 @@ class _DetailReserveState extends State<DetailReserve> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('02.00 AM'),
+                    child: Text(widget.data.data()['timeToSchedule']),
                   ),
                 ],
               )
