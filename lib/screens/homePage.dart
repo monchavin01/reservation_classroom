@@ -1,6 +1,7 @@
 import 'package:admin_cru_recognition/screens/addReserveRoom.dart';
 import 'package:admin_cru_recognition/screens/detailReserve.dart';
 import 'package:admin_cru_recognition/widgets/dropDown.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -22,18 +23,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var _chosenValue;
-  List<String> buildingList = [
-    'onGrass',
-    'running',
-    'court',
-  ];
-  List<String> floorList = [
-    '1',
-    '2',
-    '3',
-  ];
-  ScrollController _controller;
+  var _chosenValueCollection;
+  var _chosenValueDoc;
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +44,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      // controller: _controller, //new line
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.only(left: 16, right: 16),
-                      itemCount: 100,
-                      itemBuilder: _buildScheduleList),
+                  FutureBuilder(
+                      future: FirebaseFirestore.instance
+                          .collection("reservation-classroom")
+                          .doc(_chosenValueCollection ?? "all")
+                          .collection(_chosenValueDoc ?? "all")
+                          .orderBy("date", descending: true)
+                          .get(),
+                      builder: (context, snapshot) {
+                        return (snapshot.connectionState ==
+                                ConnectionState.waiting)
+                            ? Center(child: CircularProgressIndicator())
+                            : snapshot.data.documents.length > 0
+                                ? ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    // controller: _controller, //new line
+                                    shrinkWrap: true,
+                                    padding: const EdgeInsets.only(
+                                        left: 16, right: 16),
+                                    itemCount: snapshot.data.documents.length,
+                                    itemBuilder: (context, index) {
+                                      return _buildScheduleList(
+                                          context, index, snapshot);
+                                    })
+                                : Center(
+                                    child: Text(
+                                      'ไม่มีรายการ',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  );
+                      })
                 ],
               )
             ],
@@ -71,22 +85,22 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               DropDown().buildDropDown(
                   "building name",
-                  buildingList,
+                  ListData.buildingList,
                   MediaQuery.of(context).size.width * 0.6,
                   MediaQuery.of(context).size.height * 0.06,
-                  _chosenValue, (String value) {
+                  _chosenValueCollection, (String value) {
                 setState(() {
-                  _chosenValue = value;
+                  _chosenValueCollection = value;
                 });
               }),
               DropDown().buildDropDown(
                   "floor",
-                  buildingList,
+                  checkCondition(),
                   MediaQuery.of(context).size.width * 0.25,
                   MediaQuery.of(context).size.height * 0.06,
-                  _chosenValue, (String value) {
+                  _chosenValueDoc, (String value) {
                 setState(() {
-                  _chosenValue = value;
+                  _chosenValueDoc = value;
                 });
               })
             ],
@@ -100,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialPageRoute(
               builder: (context) => AddReserveRoomScreen(),
             ),
-          );
+          ).then((value) => {setState(() {})});
         },
         tooltip: 'reserve room',
         child: Icon(Icons.add),
@@ -108,7 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildScheduleList(BuildContext context, index) {
+  Widget _buildScheduleList(
+      BuildContext context, index, AsyncSnapshot snapshot) {
+    DocumentSnapshot data = snapshot.data.docs[index];
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
@@ -140,25 +156,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     Text('room number'),
                     SizedBox(width: 16),
-                    Text('9002')
+                    Text(data.data()['roomNumber'])
                   ],
                 ),
                 Row(
                   children: [
                     Text('subject'),
                     SizedBox(width: 16),
-                    Text('math')
+                    Text(data.data()['subject'])
                   ],
                 ),
                 Row(
                   children: [
                     Text('time'),
                     SizedBox(width: 16),
-                    Text('9002'),
+                    Text(data.data()['timeFromSchedule']),
                     SizedBox(width: 16),
                     Text('to'),
                     SizedBox(width: 16),
-                    Text('9002')
+                    Text(data.data()['timeToSchedule'])
                   ],
                 ),
               ],
@@ -167,5 +183,24 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  List<String> checkCondition() {
+    if (_chosenValueCollection != "building 15") {
+      if (_chosenValueCollection != "building 28") {
+        if (_chosenValueCollection != "building it") {
+          if (_chosenValueCollection != "building physical education") {
+            if (_chosenValueCollection != "building welfare") {
+              return ListData.gym;
+            }
+            return ListData.floorBuildingWelfare;
+          }
+          return ListData.floorBuildingPhysicalEducation;
+        }
+        return ListData.floorBuildingIT;
+      }
+      return ListData.floorBuilding28;
+    }
+    return ListData.floorBuilding15;
   }
 }
