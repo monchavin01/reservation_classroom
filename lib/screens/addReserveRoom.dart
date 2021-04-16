@@ -37,13 +37,7 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-          //   leading: GestureDetector(
-          // onTap: () {
-          //   Navigato
-          // },
-          // child: Icon(Icons.arrow_back_ios),
-          ),
+      appBar: AppBar(),
       body: Column(
         children: [
           Container(
@@ -268,22 +262,10 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
         "timeFromSchedule": timeFromController.text,
         "timeToSchedule": timeToController.text,
       }).then((value) {
-        firestoreInstance
-            .collection("reservation-classroom")
-            .doc("all")
-            .collection("all")
-            .add({
-          "date": dateController.text,
-          "roomNumber": roomNumberController.text,
-          "subject": subjectController.text,
-          "timeFromSchedule": timeFromController.text,
-          "timeToSchedule": timeToController.text,
-        }).then((value) => {
-                  _scaffoldKey.currentState.showSnackBar(SnackBar(
-                    content: Text('success.'),
-                    backgroundColor: Colors.green,
-                  ))
-                });
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text('success.'),
+          backgroundColor: Colors.green,
+        ));
       });
     }
   }

@@ -44,36 +44,44 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  FutureBuilder(
-                      future: FirebaseFirestore.instance
-                          .collection("reservation-classroom")
-                          .doc(_chosenValueCollection ?? "all")
-                          .collection(_chosenValueDoc ?? "all")
-                          .orderBy("date", descending: true)
-                          .get(),
-                      builder: (context, snapshot) {
-                        return (snapshot.connectionState ==
-                                ConnectionState.waiting)
-                            ? Center(child: CircularProgressIndicator())
-                            : snapshot.data.documents.length > 0
-                                ? ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    // controller: _controller, //new line
-                                    shrinkWrap: true,
-                                    padding: const EdgeInsets.only(
-                                        left: 16, right: 16),
-                                    itemCount: snapshot.data.documents.length,
-                                    itemBuilder: (context, index) {
-                                      return _buildScheduleList(
-                                          context, index, snapshot);
-                                    })
-                                : Center(
-                                    child: Text(
-                                      'ไม่มีรายการ',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  );
-                      })
+                  _chosenValueCollection != null && _chosenValueDoc != null
+                      ? FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection("reservation-classroom")
+                              .doc(_chosenValueCollection)
+                              .collection(_chosenValueDoc)
+                              .orderBy("date", descending: true)
+                              .get(),
+                          builder: (context, snapshot) {
+                            return (snapshot.connectionState ==
+                                    ConnectionState.waiting)
+                                ? Center(child: CircularProgressIndicator())
+                                : snapshot.data.documents.length > 0
+                                    ? ListView.builder(
+                                        physics: NeverScrollableScrollPhysics(),
+                                        // controller: _controller, //new line
+                                        shrinkWrap: true,
+                                        padding: const EdgeInsets.only(
+                                            left: 16, right: 16),
+                                        itemCount:
+                                            snapshot.data.documents.length,
+                                        itemBuilder: (context, index) {
+                                          return _buildScheduleList(
+                                              context, index, snapshot);
+                                        })
+                                    : Center(
+                                        child: Text(
+                                          "Don't have data",
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      );
+                          })
+                      : Center(
+                          child: Text(
+                            'Please select building and floor',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        )
                 ],
               )
             ],
@@ -132,9 +140,12 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailReserve(data: data),
+              builder: (context) => DetailReserve(
+                  data: data,
+                  collection: _chosenValueCollection,
+                  doc: _chosenValueDoc),
             ),
-          );
+          ).then((value) => {setState(() {})});
         },
         child: Container(
           // height: MediaQuery.of(context).size.height * 0.1,

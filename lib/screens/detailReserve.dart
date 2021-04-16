@@ -1,16 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DetailReserve extends StatefulWidget {
   final data;
-  DetailReserve({Key key, @required this.data}) : super(key: key);
+  final collection;
+  final doc;
+  DetailReserve({Key key, @required this.data, this.collection, this.doc})
+      : super(key: key);
   @override
   _DetailReserveState createState() => _DetailReserveState();
 }
 
 class _DetailReserveState extends State<DetailReserve> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Reserve Detail'),
         actions: <Widget>[
@@ -18,7 +25,9 @@ class _DetailReserveState extends State<DetailReserve> {
             icon: Icon(
               Icons.delete,
             ),
-            onPressed: () {},
+            onPressed: () {
+              deleteData();
+            },
           )
         ],
       ),
@@ -79,5 +88,18 @@ class _DetailReserveState extends State<DetailReserve> {
         ),
       ),
     );
+  }
+
+  void deleteData() {
+    print(widget.data.id);
+    FirebaseFirestore.instance
+        .collection("reservation-classroom")
+        .doc(widget.collection)
+        .collection(widget.doc)
+        .doc(widget.data.id)
+        .delete()
+        .then((_) {
+      Navigator.pop(context);
+    });
   }
 }
