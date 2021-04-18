@@ -167,32 +167,47 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     Text('Room number:'),
                     SizedBox(width: 16),
-                    Text(data.data()['roomNumber'])
+                    Text(
+                      data.data()['roomNumber'],
+                      overflow: TextOverflow.fade,
+                    )
                   ],
                 ),
                 Row(
                   children: [
                     Text('Subject:'),
                     SizedBox(width: 16),
-                    Text(data.data()['subject'])
+                    Text(
+                      data.data()['subject'],
+                      overflow: TextOverflow.fade,
+                    )
                   ],
                 ),
                 Row(
                   children: [
                     Text('Date:'),
                     SizedBox(width: 16),
-                    Text(data.data()['date'])
+                    Text(
+                      data.data()['date'],
+                      overflow: TextOverflow.fade,
+                    )
                   ],
                 ),
                 Row(
                   children: [
                     Text('time:'),
                     SizedBox(width: 16),
-                    Text(data.data()['timeFromSchedule']),
+                    Text(
+                      data.data()['timeFromSchedule'],
+                      overflow: TextOverflow.fade,
+                    ),
                     SizedBox(width: 16),
                     Text('to'),
                     SizedBox(width: 16),
-                    Text(data.data()['timeToSchedule'])
+                    Text(
+                      data.data()['timeToSchedule'],
+                      overflow: TextOverflow.fade,
+                    )
                   ],
                 ),
               ],
