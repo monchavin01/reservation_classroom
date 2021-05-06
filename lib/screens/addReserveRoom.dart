@@ -20,7 +20,8 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
   TextEditingController timeFromController = TextEditingController();
   TextEditingController timeToController = TextEditingController();
   DateTime currentDate = DateTime.now();
-  TimeOfDay selectedTime = TimeOfDay.now();
+  TimeOfDay selectedTimeTo = TimeOfDay.now();
+  TimeOfDay selectedTimeFrom = TimeOfDay.now();
 
   var formatter = DateFormat('dd-MM-yyyy');
   var formattedTime = DateFormat('kk:mm a');
@@ -74,12 +75,12 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildTimeFormField(timeFromController),
+              _buildTimeFormField(timeFromController, "timeFrom"),
               Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: Text('to'),
               ),
-              _buildTimeFormField(timeToController),
+              _buildTimeFormField(timeToController, "timeTo"),
             ],
           ),
         ],
@@ -128,14 +129,14 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
     return ListData.floorBuilding15;
   }
 
-  Widget _buildTimeFormField(TextEditingController controller) {
+  Widget _buildTimeFormField(TextEditingController controller, String type) {
     return Padding(
       padding: EdgeInsets.only(top: 16, bottom: 16),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.41,
         child: InkWell(
           onTap: () {
-            _selectTime(context);
+            _selectTime(context, type);
           },
           child: IgnorePointer(
             child: TextFormField(
@@ -218,23 +219,44 @@ class _AddReserveRoomScreenState extends State<AddReserveRoomScreen> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay picked = await showTimePicker(
-        context: context,
-        initialTime: selectedTime,
-        builder: (BuildContext context, Widget child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
-            child: child,
-          );
-        });
+  Future<void> _selectTime(BuildContext context, String type) async {
+    if (type == "timeTo") {
+      final TimeOfDay pickedTimeTo = await showTimePicker(
+          context: context,
+          initialTime: selectedTimeTo,
+          builder: (BuildContext context, Widget child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+              child: child,
+            );
+          });
 
-    if (picked != null && picked != selectedTime)
-      setState(() {
-        selectedTime = picked;
-        String resultFormatTime = picked.format(context);
-        timeFromController.text = resultFormatTime;
-      });
+      if (pickedTimeTo != null && pickedTimeTo != selectedTimeTo)
+        setState(() {
+          selectedTimeTo = pickedTimeTo;
+          String resultFormatTime = pickedTimeTo.format(context);
+          timeToController.text = resultFormatTime;
+        });
+    } else {
+      final TimeOfDay pickedFrom = await showTimePicker(
+          context: context,
+          initialTime: selectedTimeFrom,
+          builder: (BuildContext context, Widget child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+              child: child,
+            );
+          });
+
+      if (pickedFrom != null && pickedFrom != selectedTimeFrom)
+        setState(() {
+          selectedTimeFrom = pickedFrom;
+          String resultFormatTime = pickedFrom.format(context);
+          timeFromController.text = resultFormatTime;
+        });
+    }
   }
 
   void _onPressed(BuildContext context) {

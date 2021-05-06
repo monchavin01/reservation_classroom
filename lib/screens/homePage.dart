@@ -88,7 +88,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         Container(
-          color: Colors.white70,
+          alignment: Alignment.topCenter,
+          // color: Colors.white70,
           child: Row(
             children: [
               DropDown().buildDropDown(
@@ -104,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
               DropDown().buildDropDown(
                   "floor",
                   checkCondition(),
-                  MediaQuery.of(context).size.width * 0.25,
+                  MediaQuery.of(context).size.width * 0.2,
                   MediaQuery.of(context).size.height * 0.06,
                   _chosenValueDoc, (String value) {
                 setState(() {
